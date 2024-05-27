@@ -30,7 +30,9 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
     }
 
     public void setArrayListFileData(ArrayList<FileData> arrayListFileData) {
+        this.arrayListFileData.clear();
         this.arrayListFileData = arrayListFileData;
+        this.notifyDataSetChanged();
     }
 
     public View.OnClickListener getListener() {
