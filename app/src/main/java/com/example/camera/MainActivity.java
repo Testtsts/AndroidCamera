@@ -15,11 +15,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +32,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    Bitmap bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                     MainActivity.this.saveFile(bitmap);
                 }
             }
@@ -54,51 +57,41 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            if (id == R.id.imageButtonAmbilPhoto) {
+            if (id == R.id.Btn_take_pict) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 MainActivity.this.launcherKamera.launch(intent);
             }
-            else if (id == R.id.imageButtonServer) {
-                MainActivity.this.tampilInput();
-            }
-
         }
     };
-    private String serverURL = "";
+    private String serverURL = "http://10.0.2.2:3000/";
 
     private void tampilInput() {
     }
+
+    Button imageButtonAmbilPhoto;
+    Button imageButtonServer;
+    RecyclerView recyclerViewfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.camera_view), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        MainActivity.this.launcherKamera.launch(intent);
 
-        this.imageButtonAmbilPhoto = (ImageButton) this.findViewById(R.id.imageButtonAmbilPhoto);
-        this.imageButtonServer = (ImageButton) this.findViewById(R.id.imageButtonServer);
-        this.recyclerViewFile = (RecyclerView) this.findViewById(R.id.recyclerViewFile);
+
+        this.imageButtonAmbilPhoto = (Button) this.findViewById(R.id.Btn_take_pict);
+        this.recyclerViewfile = this.findViewById(R.id.camera_view);
+        this.recyclerViewfile.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
 
         this.imageButtonAmbilPhoto.setOnClickListener(this.onClickListener);
-        this.imageButtonServer.setOnClickListener(this.onClickListener);
+        this.recyclerViewfile.setAdapter(new FilesRecyclerViewAdapter());
 
-        this.recyclerViewFile.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        this.recyclerViewFile.setAdapter(new FilesRecyclerViewAdapter(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String filePath = (String) v.getTag();
-
-                Intent intent = new Intent(MainActivity.this, FotoActivity.class);
-                intent.putExtra("server address", MainActivity.this.serverURL);
-                intent.putExtra("filepath", filePath);
-
-                startActivity(intent);
-            }
-        }));
 
     }
 
@@ -123,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=*****");
                 connection.setRequestProperty("Accept", "application/json");
-                connection.setDoOutput(true);
+                 connection.setDoOutput(true);
 
                 writer = new DataOutputStream(connection.getOutputStream());
                 writer.writeBytes("--*****\r\n");
@@ -155,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFilesFromServer() {
+
         new Thread(() -> {
             HttpURLConnection connection;
             BufferedReader reader = null;
@@ -181,16 +175,20 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<FileData> result = new ArrayList<>();
 
                 JSONObject responseObject = new JSONObject(response.toString());
-                JSONArray files = responseObject.getJSONArray("files");
-                for(int i = 0; i < files.length(); i++) {
-                    JSONObject file = files.getJSONObject(i);
-                    result.add(new FileData(file.getInt("id"), file.getString("file_name"), file.getString("path")));
+
+                Iterator<String> keys = responseObject.keys();
+                int iteratorIdx=0;
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                        result.add(new FileData(iteratorIdx,key, responseObject.get(key).toString()));
+                        iteratorIdx++;
                 }
 
+
                 runOnUiThread(() -> {
-                    FilesRecyclerViewAdapter adapter = (FilesRecyclerViewAdapter) MainActivity.this.recyclerViewFile.getAdapter();
+                    FilesRecyclerViewAdapter adapter = (FilesRecyclerViewAdapter) MainActivity.this.recyclerViewfile.getAdapter();
                     try {
-                        Objects.requireNonNull(adapter).setItem(result);
+                        Objects.requireNonNull(adapter).setArrayListFileData(result);
                     }
                     catch (Exception ignored) {}
                 });

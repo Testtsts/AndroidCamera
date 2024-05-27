@@ -6,25 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
+<!--    <Button-->
+<!--        android:id="@+id/Btn_load_pict"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="70dp"-->
+<!--        android:layout_below="@+id/camera_view"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:layout_toStartOf="@id/Btn_take_pict"-->
+<!--        android:layout_marginRight="60dp"-->
+<!--        android:background="@drawable/custom_button_2"-->
+<!--        android:contentDescription="load picture" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/camera_view"
         android:layout_width="411dp"
         android:layout_height="600dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/Btn_upload"
         android:contentDescription="camera image"
         />
 
     <Button
-        android:id="@+id/Btn_upload"
+        android:id="@+id/Btn_load_pict"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:visibility="gone"
-        android:text="Upload"
+        android:layout_toStartOf="@id/Btn_take_pict"
+        android:layout_alignTop="@id/Btn_take_pict"
+        android:text="Load"
         />
 
     <Button

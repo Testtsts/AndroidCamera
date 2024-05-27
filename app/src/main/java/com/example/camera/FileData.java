@@ -3,13 +3,14 @@ package com.example.camera;
 public class FileData {
     private int id;
     private String fileName;
-    private String path;
+    private String fileData;
 
-    public FileData(int id, String fileName, String path) {
+    public FileData(int id, String fileName, String fileData) {
         this.id = id;
         this.fileName = fileName;
-        this.path = path;
+        this.fileData = fileData;
     }
+
 
     public String getFileName() {
         return fileName;
@@ -19,12 +20,12 @@ public class FileData {
         this.fileName = fileName;
     }
 
-    public String getPath() {
-        return path;
+    public String getfileData() {
+        return fileData;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setfileData(String fileData) {
+        this.fileData = fileData;
     }
 
     public int getId() {
