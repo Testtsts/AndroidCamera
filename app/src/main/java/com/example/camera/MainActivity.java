@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    private String serverURL = "http://10.0.2.2:3000/";
+    private String serverURL = "https://moray-evident-globally.ngrok-free.app";
 
     private void tampilInput() {
     }
