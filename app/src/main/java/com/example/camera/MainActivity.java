@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 MainActivity.this.launcherKamera.launch(intent);
             }
+            else if (id == R.id.Btn_load_pict){
+                runOnUiThread(MainActivity.this::loadFilesFromServer);
+            }
         }
     };
     private String serverURL = "https://moray-evident-globally.ngrok-free.app";
@@ -86,10 +89,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         this.imageButtonAmbilPhoto = (Button) this.findViewById(R.id.Btn_take_pict);
+        this.imageButtonServer=(Button) this.findViewById(R.id.Btn_load_pict) ;
         this.recyclerViewfile = this.findViewById(R.id.camera_view);
         this.recyclerViewfile.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
 
         this.imageButtonAmbilPhoto.setOnClickListener(this.onClickListener);
+        this.imageButtonServer.setOnClickListener(this.onClickListener);
         this.recyclerViewfile.setAdapter(new FilesRecyclerViewAdapter());
 
 
