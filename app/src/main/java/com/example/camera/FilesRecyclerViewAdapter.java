@@ -51,12 +51,18 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
 
         //        private View view;
         private ImageView imageView ;
+        private TextView breedText;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
 //            this.image = itemView;
             this.imageView = itemView.findViewById(R.id.imageView);
+            this.breedText= itemView.findViewById(R.id.breedText);
 
+        }
+
+        public TextView getBreedText() {
+            return breedText;
         }
     }
 
@@ -75,6 +81,7 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
         // contents of the view with that element
 
         viewHolder.getImageView().setImageBitmap(decodeBase64(arrayListFileData.get(position).getfileData()));
+        viewHolder.getBreedText().setText(arrayListFileData.get(position).getFileName());
     }
 
     @Override

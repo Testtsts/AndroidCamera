@@ -156,10 +156,23 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> {
             HttpURLConnection connection;
+            HttpURLConnection connectionTagging;
             BufferedReader reader = null;
             StringBuilder response = new StringBuilder();
 
             try {
+                URL urlTag = new URL(MainActivity.this.serverURL+"/tagged");
+                connectionTagging = (HttpURLConnection) urlTag.openConnection();
+                connectionTagging.setRequestMethod("POST");
+
+                if (connectionTagging.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, "Error mengambil data dari server", Toast.LENGTH_SHORT).show();
+                    });
+                    throw new Exception();
+                }
+
+
                 URL url = new URL(MainActivity.this.serverURL);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
