@@ -11,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -100,7 +104,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Bitmap draw_box(Bitmap imageBitmap, ArrayList<ResponseData> responseData, int width, int height) {
+        Canvas canvas = new Canvas(imageBitmap);
 
+        Paint bounding_box = new Paint();
+        bounding_box.setColor(Color.RED);
+        bounding_box.setStyle(Paint.Style.STROKE);
+        bounding_box.setStrokeWidth(5);
+
+        Paint class_confidence = new Paint();
+        class_confidence.setColor(Color.BLACK); // Set text color (can be any color)
+        class_confidence.setTextSize(30f); // Set text size in pixels
+        class_confidence.setTextAlign(Paint.Align.CENTER); // Set text alignment (CENTER, LEFT, RIGHT)
+
+        for (int i = 0; i < responseData.size(); i++){
+            ResponseData rd = responseData.get(i);
+            canvas.drawRect(rd.getLeft(), rd.getTop(), rd.getRight(), rd.getBottom(), bounding_box);
+            canvas.drawText(rd.getClassLabel() + " " + String.valueOf(rd.getConfidence()), rd.getLeft(), rd.getTop()+1, class_confidence);
+            Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        }
+        return imageBitmap;
+    }
 
     private void saveFile(Bitmap bitmap) {
         Date date = new Date();
@@ -192,8 +216,27 @@ public class MainActivity extends AppCompatActivity {
 
                 ArrayList<FileData> result = new ArrayList<>();
 
+                ArrayList<ResponseData> responseDatas = new ArrayList<>();
+
                 JSONObject responseObject = new JSONObject(response.toString());
 
+                JSONArray predict = responseObject.getJSONArray("predictions");
+
+                for(int i=0; i<predict.length(); i++){
+                    JSONObject data = predict.getJSONObject(i);
+                    double x1 = data.getDouble("x");
+                    double y1 = data.getDouble("y");
+                    double width = data.getDouble("width");
+                    double height = data.getDouble("height");
+                    String classLabel = data.getString("class");
+                    double confidence = data.getDouble("confidence");
+
+                    double right = x1 + width;
+                    double bottom = y1 + height;
+                    responseDatas.add(new ResponseData((float) x1, (float) y1, (float) right, (float) bottom,confidence,classLabel));
+                }
+
+                Bitmap predictedImage = draw_box(BitmapFactory.decodeStream(connectionTagging.getInputStream()), responseDatas, 1000, 1000);
                 Iterator<String> keys = responseObject.keys();
                 int iteratorIdx=0;
                 while(keys.hasNext()) {
