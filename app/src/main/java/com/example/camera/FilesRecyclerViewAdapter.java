@@ -80,7 +80,7 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
 
-        viewHolder.getImageView().setImageBitmap(decodeBase64(arrayListFileData.get(position).getfileData()));
+        viewHolder.getImageView().setImageBitmap((arrayListFileData.get(position).getfileData()));
         viewHolder.getBreedText().setText(arrayListFileData.get(position).getFileName());
     }
 
