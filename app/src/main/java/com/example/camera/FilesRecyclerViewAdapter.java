@@ -2,6 +2,8 @@ package com.example.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +81,10 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-
+        Bitmap imageBitmap = decodeBase64(arrayListFileData.get(position).getfileData());
+        Canvas imageCanvas = new Canvas(imageBitmap);
+        Paint paint = new Paint();
+//        imageCanvas.drawRect(200,200,200,200,paint);
         viewHolder.getImageView().setImageBitmap(decodeBase64(arrayListFileData.get(position).getfileData()));
         viewHolder.getBreedText().setText(arrayListFileData.get(position).getFileName());
     }
