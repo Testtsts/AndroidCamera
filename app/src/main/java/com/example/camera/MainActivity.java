@@ -115,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
         Paint class_confidence = new Paint();
         class_confidence.setColor(Color.BLACK); // Set text color (can be any color)
         class_confidence.setTextSize(30f); // Set text size in pixels
-        class_confidence.setTextAlign(Paint.Align.CENTER); // Set text alignment (CENTER, LEFT, RIGHT)
+        class_confidence.setTextAlign(Paint.Align.LEFT); // Set text alignment (CENTER, LEFT, RIGHT)
 
         for (int i = 0; i < responseData.size(); i++){
             ResponseData rd = responseData.get(i);
             canvas.drawRect(rd.getLeft(), rd.getTop(), rd.getRight(), rd.getBottom(), bounding_box);
             canvas.drawText(rd.getClassLabel() + " " + String.valueOf(rd.getConfidence()), rd.getLeft(), rd.getTop()+1, class_confidence);
-            Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         }
+        Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return imageBitmap;
     }
 
